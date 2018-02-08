@@ -7,10 +7,18 @@ import App from './App'
  Feel free to use this file to test your application, but it 
  is not required.
 **/
+describe('<App />', () => {
 
-it('renders without crashing', () => {
-  const div = document.createElement('div')
-  ReactDOM.render(<App />, div)
+  const mockAPI = {
+    BooksAPI: {
+      getAll: jest.fn()
+    }
+  }
+
+  it('renders without crashing', () => {
+    const div = document.createElement('div')
+    ReactDOM.render(<App api={mockAPI}/>, div)
+  })
+  
 })
-
 
