@@ -1,31 +1,55 @@
-import React from 'react'
-import { Route } from 'react-router-dom'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import exact from 'prop-types-exact'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import './App.css'
-import { BrowserRouter as Router } from 'react-router-dom'
 import ListBooks from './components/ListBooks'
 import SearchBooks from './components/SearchBooks'
+import Loader from './components/Loader'
 
-class BooksApp extends React.Component {
-  state = {
-    books: []
+class App extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      books: [],
+      isLoading: true
+    }
   }
 
+  static propTypes = exact({
+    api: PropTypes.shape({
+      BooksAPI: PropTypes.object.isRequired
+    }).isRequired
+  })
+
   async componentDidMount() {
-    const books = await this.props.api.BooksAPI.getAll()
-    this.setState({ books })
-    console.log(books)
+    try {
+      const books = await this.props.api.BooksAPI.getAll()
+      this.setState({ books, isLoading: false })
+      console.log('books', books)
+    } catch (error) {
+      throw new Error(error)
+      console.error(error)
+    }
   }
 
   render() {
     return (
       <Router>
         <div className="app">
-          <Route path="/" exact render={() => <ListBooks books={this.state.books} />} />
-          <Route path={'/search'} exact render={() => <SearchBooks />} />
+          <Switch>
+            <Route
+              path="/"
+              exact
+              render={() =>  this.state.isLoading ? <Loader /> : <ListBooks books={this.state.books} />}
+            />
+            <Route path={'/search'} exact render={() => <SearchBooks />} />
+          </Switch>
         </div>
       </Router>
     )
   }
 }
 
-export default BooksApp
+export default App
