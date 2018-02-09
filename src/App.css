@@ -12,7 +12,7 @@ body, .app {
 
 .list-books-title {
   padding: 10px 0;
-  background: #2e7c31;
+  background: #1F6CC7;
   text-align: center;
 }
 .list-books-title h1 {
@@ -24,6 +24,7 @@ body, .app {
 .list-books-content {
   padding: 0 0 80px;
   flex: 1;
+  animation: fade-in 2s;
 }
 
 .bookshelf {
@@ -53,7 +54,7 @@ body, .app {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: #2e7d32;
+  background: #1F6CC7;
   background-image: url('./icons/add.svg');
   background-repeat: no-repeat;
   background-position: center;
@@ -147,7 +148,7 @@ body, .app {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #60ac5d;
+  background: #1F6CC7;
   background-image: url('./icons/arrow-drop-down.svg');
   background-repeat: no-repeat;
   background-position: center;
@@ -171,4 +172,34 @@ body, .app {
   padding: 20px 10px 0;
   text-align: center;
   font-size: 0.8em;
+}
+
+/* loader */
+
+.loader {
+  position: absolute;
+  display: flex;
+  background-color: rgba(119, 164, 223, 0.4);
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  /* animation: fade-out 2s; */
+}
+
+.loader-icon {
+  flex: 1;
+  height: 300px;
+  width: 300px;
+}
+
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
 }
