@@ -1,4 +1,11 @@
 {
+  "jest": {
+    "collectCoverageFrom": [
+      "src/components**/*.{js}",
+      "!<rootDir>/node_modules/",
+      "!<rootDir>/api/"
+    ]
+  },
   "dependencies": {
     "prop-types": "^15.5.8",
     "prop-types-exact": "^1.1.2",
@@ -7,12 +14,15 @@
     "react-router-dom": "^4.2.2"
   },
   "devDependencies": {
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
     "react-scripts": "1.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
+    "coverage": "react-scripts test --env=jsdom --coverage",
     "eject": "react-scripts eject"
   }
 }
