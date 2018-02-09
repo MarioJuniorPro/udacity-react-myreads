@@ -11,10 +11,11 @@ const propTypes = exact({
 
 function Book(props) {
   const { title, imageLinks, authors } = props.book
+  const coverImage = (imageLinks && imageLinks.smallThumbnail || '')
   return (
     <div className="book">
       <div className="book-top">
-        <BookCover image_uri={imageLinks.smallThumbnail} />
+        <BookCover image_uri={coverImage} />
         <div className="book-shelf-changer">
           <select>
             <option value="none" disabled>

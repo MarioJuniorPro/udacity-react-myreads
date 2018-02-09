@@ -27,7 +27,6 @@ class App extends Component {
     try {
       const books = await this.props.api.BooksAPI.getAll()
       this.setState({ books, isLoading: false })
-      console.log('books', books)
     } catch (error) {
       throw new Error(error)
       console.error(error)
