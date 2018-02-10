@@ -9,12 +9,12 @@ export default class ListBooks extends Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-    }
+    this.state = {}
   }
 
   static propTypes = {
-    books: PropTypes.array.isRequired
+    books: PropTypes.array.isRequired,
+    updateBooks: PropTypes.func
   }
 
   static defaultProps = {
@@ -25,7 +25,15 @@ export default class ListBooks extends Component {
     return this.props.books.filter(book => book.shelf === shelf)
   }
 
-  renderBookList(){
+  moveBook = (book, shelf = '') => {
+    //mutate a single property and preserve current info
+    const books = this.props.books.map(b => {
+      return b.id === book.id ? { ...b, shelf } : b
+    })
+    this.props.updateBooks([...books])
+  }
+
+  renderBookList() {
     return (
       <Fragment>
         <div className="list-books-content">
@@ -33,12 +41,18 @@ export default class ListBooks extends Component {
             <BookShelf
               title={'Currently Reading'}
               books={this.getBooksByShelf('currentlyReading')}
+              moveBook={this.moveBook}
             />
             <BookShelf
               title={'Want to Read'}
               books={this.getBooksByShelf('wantToRead')}
+              moveBook={this.moveBook}
             />
-            <BookShelf title={'Read'} books={this.getBooksByShelf('read')} />
+            <BookShelf
+              title={'Read'}
+              books={this.getBooksByShelf('read')}
+              moveBook={this.moveBook}
+            />
           </div>
         </div>
         <div className="open-search">

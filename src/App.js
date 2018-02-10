@@ -28,9 +28,12 @@ class App extends Component {
       const books = await this.props.api.BooksAPI.getAll()
       this.setState({ books, isLoading: false })
     } catch (error) {
-      throw new Error(error)
       console.error(error)
     }
+  }
+
+  updateBooks = books => {
+    this.setState({books})
   }
 
   render() {
@@ -41,7 +44,13 @@ class App extends Component {
             <Route
               path="/"
               exact
-              render={() =>  this.state.isLoading ? <Loader /> : <ListBooks books={this.state.books} />}
+              render={() =>
+                this.state.isLoading ? (
+                  <Loader />
+                ) : (
+                  <ListBooks books={this.state.books} updateBooks={this.updateBooks}/>
+                )
+              }
             />
             <Route path={'/search'} exact render={() => <SearchBooks />} />
           </Switch>
