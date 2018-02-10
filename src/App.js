@@ -32,8 +32,14 @@ class App extends Component {
     }
   }
 
-  updateBooks = books => {
-    this.setState({books})
+  updateBook = async book => {
+    try {
+      await this.props.api.BooksAPI.update(book, book.shelf)
+      const filteredBooks = this.state.books.filter(b => b.id !== book.id)
+      this.setState({ books: [...filteredBooks, book] })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   render() {
@@ -48,7 +54,10 @@ class App extends Component {
                 this.state.isLoading ? (
                   <Loader />
                 ) : (
-                  <ListBooks books={this.state.books} updateBooks={this.updateBooks}/>
+                  <ListBooks
+                    books={this.state.books}
+                    updateBook={this.updateBook}
+                  />
                 )
               }
             />

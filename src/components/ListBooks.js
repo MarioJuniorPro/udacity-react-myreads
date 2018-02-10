@@ -14,7 +14,7 @@ export default class ListBooks extends Component {
 
   static propTypes = {
     books: PropTypes.array.isRequired,
-    updateBooks: PropTypes.func
+    updateBook: PropTypes.func
   }
 
   static defaultProps = {
@@ -27,10 +27,8 @@ export default class ListBooks extends Component {
 
   moveBook = (book, shelf = '') => {
     //mutate a single property and preserve current info
-    const books = this.props.books.map(b => {
-      return b.id === book.id ? { ...b, shelf } : b
-    })
-    this.props.updateBooks([...books])
+    const [bookToUpdate] = this.props.books.filter(b => b.id === book.id)
+    this.props.updateBook({...bookToUpdate, shelf})
   }
 
   renderBookList() {
