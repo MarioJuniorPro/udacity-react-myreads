@@ -25,7 +25,6 @@ export default class BookShelfChanger extends Component {
     e.preventDefault()
     const shelf = e.target.value
     this.props.onMove(this.props.book, shelf)
-    console.log(shelf)
   }
 
   render() {
