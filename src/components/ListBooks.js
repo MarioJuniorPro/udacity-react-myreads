@@ -8,8 +8,13 @@ import BookShelf from './BookShelf'
 export default class ListBooks extends Component {
   constructor(props) {
     super(props)
-
-    this.state = {}
+    this.state = {
+      shelfs: [
+        { title: 'Currently Reading', type: 'currentlyReading'},
+        { title: 'Want to Read', type: 'wantToRead'},
+        { title: 'Read', type: 'read'}
+      ]
+    }
   }
 
   static propTypes = {
@@ -28,36 +33,7 @@ export default class ListBooks extends Component {
   moveBook = (book, shelf = '') => {
     //mutate a single property and preserve current info
     const [bookToUpdate] = this.props.books.filter(b => b.id === book.id)
-    this.props.updateBook({...bookToUpdate, shelf})
-  }
-
-  renderBookList() {
-    return (
-      <Fragment>
-        <div className="list-books-content">
-          <div>
-            <BookShelf
-              title={'Currently Reading'}
-              books={this.getBooksByShelf('currentlyReading')}
-              moveBook={this.moveBook}
-            />
-            <BookShelf
-              title={'Want to Read'}
-              books={this.getBooksByShelf('wantToRead')}
-              moveBook={this.moveBook}
-            />
-            <BookShelf
-              title={'Read'}
-              books={this.getBooksByShelf('read')}
-              moveBook={this.moveBook}
-            />
-          </div>
-        </div>
-        <div className="open-search">
-          <Link to="/search">Add a book</Link>
-        </div>
-      </Fragment>
-    )
+    this.props.updateBook({ ...bookToUpdate, shelf })
   }
 
   render() {
@@ -66,7 +42,21 @@ export default class ListBooks extends Component {
         <div className="list-books-title">
           <h1>MyReads</h1>
         </div>
-        {this.renderBookList()}
+        <div className="list-books-content">
+          <div>
+            { this.state.shelfs.map(({title, type}) => (
+              <BookShelf
+                key={title}
+                title={title}
+                books={this.getBooksByShelf(type)}
+                moveBook={this.moveBook}
+            />  
+            ))}
+          </div>
+        </div>
+        <div className="open-search">
+          <Link to="/search">Add a book</Link>
+        </div>
       </div>
     )
   }
