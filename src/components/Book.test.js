@@ -1,5 +1,6 @@
 import React from 'react'
 import Book from './Book'
+import BookShelfChanger from './BookShelfChanger'
 
 import { shallow, mount, render } from 'enzyme'
 
@@ -35,8 +36,8 @@ describe('<Book />', () => {
     expect(comp).toHaveLength(1)
   })
 
-  it('render a <BookShelfChanger />', () => {
-    const wrapper = mount(<Book book={book} onMove={mockBookMove}/>)
+  it('render a <BookShelfChanger /> children', () => {
+    const wrapper = mount(<Book book={book}><BookShelfChanger book={book} onMove={mockBookMove} /></Book>)
     const comp = wrapper.find('BookShelfChanger')
     expect(comp).toHaveLength(1)
     // console.log(wrapper.debug())

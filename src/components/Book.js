@@ -5,11 +5,9 @@ import BookCover from './BookCover'
 
 import bookShape from './book.shape'
 import BookAuthors from './BookAuthors'
-import BookShelfChanger from './BookShelfChanger'
 
 const propTypes = exact({
-  book: bookShape,
-  onMove: PropTypes.func
+  book: bookShape
 }).isRequired
 
 function Book(props) {
@@ -19,7 +17,7 @@ function Book(props) {
     <div className="book">
       <div className="book-top">
         <BookCover image_uri={coverImage} />
-        <BookShelfChanger book={props.book} onMove={props.onMove} />
+        {props.children}
       </div>
       <div className="book-title">{title}</div>
       <BookAuthors authors={authors} />
