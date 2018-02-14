@@ -17,9 +17,10 @@ const defaultProps = {
 
 function BookShelf(props) {
   const { title, books } = props
+  const bookCount = books.length
   return (
     <div className="bookshelf">
-      <h2 className="bookshelf-title">{title} </h2>
+      <h2 className="bookshelf-title">{title} ({bookCount})</h2>
       <div className="bookshelf-books">
         <ol className="books-grid">
           {books.map(book => (
