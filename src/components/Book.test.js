@@ -49,6 +49,5 @@ describe('<Book />', () => {
     const wrapper = mount(<Book book={book}><BookShelfChanger book={book} onMove={mockBookMove} /></Book>)
     const comp = wrapper.find('BookShelfChanger')
     expect(comp).toHaveLength(1)
-    // console.log(wrapper.debug())
   })
 })

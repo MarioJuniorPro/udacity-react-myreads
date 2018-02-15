@@ -7,9 +7,11 @@
     ]
   },
   "dependencies": {
+    "lodash": "^4.17.5",
     "prop-types": "^15.5.8",
     "prop-types-exact": "^1.1.2",
     "react": "^16.2.0",
+    "react-debounce-input": "^3.2.0",
     "react-dom": "^16.2.0",
     "react-router-dom": "^4.2.2"
   },

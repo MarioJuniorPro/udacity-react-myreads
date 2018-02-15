@@ -38,7 +38,17 @@ class App extends Component {
       const filteredBooks = this.state.books.filter(b => b.id !== book.id)
       this.setState({ books: [...filteredBooks, book] })
     } catch (error) {
-      console.log(error)
+      console.error(error)
+    }
+  }
+
+  searchBooks = async term => {
+    try {
+      const result = await this.props.api.BooksAPI.search(term)
+      return result
+    } catch (error) {
+      console.error(error)
+      return [];
     }
   }
 
@@ -61,7 +71,16 @@ class App extends Component {
                 )
               }
             />
-            <Route path={'/search'} exact render={() => <SearchBooks />} />
+            <Route
+              path={'/search'}
+              exact
+              render={() => (
+                <SearchBooks
+                  updateBook={this.updateBook}
+                  searchBooks={this.searchBooks}
+                />
+              )}
+            />
           </Switch>
         </div>
       </Router>

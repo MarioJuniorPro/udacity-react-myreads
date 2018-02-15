@@ -2,8 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import exact from 'prop-types-exact'
 
-import Book from './Book';
-import BookShelfChanger from './BookShelfChanger'
+import BookGrid from './BookGrid'
 
 const propTypes = exact({
   title: PropTypes.string.isRequired,
@@ -22,15 +21,7 @@ function BookShelf(props) {
     <div className="bookshelf">
       <h2 className="bookshelf-title">{title} ({bookCount})</h2>
       <div className="bookshelf-books">
-        <ol className="books-grid">
-          {books.map(book => (
-          <li key={book.id}>
-            <Book book={book}>
-              <BookShelfChanger book={book} onMove={props.moveBook} />
-            </Book>
-          </li>
-          ))}
-        </ol>
+        <BookGrid books={books} moveBook={props.moveBook}></BookGrid>
       </div>
     </div>
   )
