@@ -22,36 +22,33 @@ export default class SearchBooks extends Component {
   }
 
   setSearchTerm = async term => {
-    console.log(term)
     try {
       const results = await this.props.searchBooks(term)
       
       const books = _.isArray(results) ? results : []
-      const booksWithShelf = books.map(
+      const booksInTheShelf = books.map(
         book => (book.shelf ? book : { ...book, shelf: 'none' })
       )
-      this.setState({ books: booksWithShelf })
+      this.setState({ books: booksInTheShelf })
     } catch (error) {
       this.setState({ books: [] })
-      console.error(error)
     }
   }
 
   moveBook = async (book, shelf) => {
     //mutate a single property and preserve current info
-    const [bookToUpdate] = this.state.books.filter(b => b.id === book.id)
     try {
+      const bookToUpdate = _.head(this.state.books.filter(b => b.id === book.id))
       await this.props.updateBook({ ...bookToUpdate, shelf })
       this.setState(prevState => {
         return { books: prevState.books.filter(b => b.id !== bookToUpdate.id) }
       })
     } catch (error) {
-      console.error(error)
     }
   }
 
   render() {
-    const books = this.state.books || []
+    const books = this.state.books
     return (
       <div className="search-books">
         <div className="search-books-bar">
