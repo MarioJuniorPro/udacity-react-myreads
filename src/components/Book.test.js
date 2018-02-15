@@ -9,7 +9,10 @@ describe('<Book />', () => {
     id: 'nggnmAEACAAJ',
     title: 'Learn React',
     subtitle: 'The essencial guide',
-    authors: ['Tolken', 'Dan']
+    authors: ['Tolken', 'Dan'],
+    imageLinks : {
+      smallThumbnail: ''
+    }
   }
 
   const mockBookMove = jest.fn()
@@ -25,6 +28,12 @@ describe('<Book />', () => {
   })
 
   it('render a <BookCover />', () => {
+    const wrapper = mount(<Book book={book} onMove={mockBookMove} />)
+    const cover = wrapper.find('BookCover')
+    expect(cover).toHaveLength(1)
+  })
+
+  it('render a <BookCover /> without imageLinks', () => {
     const wrapper = mount(<Book book={book} onMove={mockBookMove} />)
     const cover = wrapper.find('BookCover')
     expect(cover).toHaveLength(1)

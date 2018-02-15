@@ -30,7 +30,7 @@ export default class ListBooks extends Component {
     return this.props.books.filter(book => book.shelf === shelf)
   }
 
-  moveBook = (book, shelf = '') => {
+  moveBook = (book, shelf) => {
     //mutate a single property and preserve current info
     const [bookToUpdate] = this.props.books.filter(b => b.id === book.id)
     this.props.updateBook({ ...bookToUpdate, shelf })

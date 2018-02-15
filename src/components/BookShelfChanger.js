@@ -21,6 +21,10 @@ export default class BookShelfChanger extends Component {
     this.setState({shelf: this.props.book.shelf})
   }
 
+  componentWillReceiveProps(nextProps){
+    this.setState({shelf: nextProps.book.shelf})
+  }
+
   handleChange = (e) => {
     e.preventDefault()
     const shelf = e.target.value
