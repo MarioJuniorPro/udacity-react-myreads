@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import exact from 'prop-types-exact'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import _ from 'lodash'
+
 import './App.css'
 import ListBooks from './components/ListBooks'
 import SearchBooks from './components/SearchBooks'
@@ -12,7 +14,9 @@ class App extends Component {
     super(props)
 
     this.state = {
+      query: '',
       books: [],
+      booksSearchResult: [],
       isLoading: true
     }
   }
@@ -35,8 +39,10 @@ class App extends Component {
   updateBook = async book => {
     try {
       await this.props.api.BooksAPI.update(book, book.shelf)
-      const filteredBooks = this.state.books.filter(b => b.id !== book.id)
-      this.setState({ books: [...filteredBooks, book] })
+      const books = await this.props.api.BooksAPI.getAll()
+      const filteredBooks = books.filter(b => b.shelf !== 'none')
+      this.setState({ books: filteredBooks })
+      this.searchBooks(this.state.query)
     } catch (error) {
       console.error(error)
     }
@@ -44,11 +50,14 @@ class App extends Component {
 
   searchBooks = async term => {
     try {
-      const result = await this.props.api.BooksAPI.search(term)
-      return result
+      const results = await this.props.api.BooksAPI.search(term)
+      const books = _.isArray(results) ? results : []
+      const booksInTheShelf = books.map(
+        book => (book.shelf ? book : { ...book, shelf: 'none' })
+      )
+      this.setState({ booksSearchResult: booksInTheShelf, query: term })
     } catch (error) {
       console.error(error)
-      return [];
     }
   }
 
@@ -76,6 +85,8 @@ class App extends Component {
               exact
               render={() => (
                 <SearchBooks
+                  query={this.state.query}
+                  books={this.state.booksSearchResult}
                   updateBook={this.updateBook}
                   searchBooks={this.searchBooks}
                 />

@@ -12,48 +12,41 @@ export default class SearchBooks extends Component {
 
     this.state = {
       query: '',
-      books: []
     }
+  }
+  
+  static contextTypes = {
+    router: PropTypes.object
   }
 
   static propTypes = {
     updateBook: PropTypes.func,
-    searchBooks: PropTypes.func
+    searchBooks: PropTypes.func,
+    query: PropTypes.string
   }
 
   componentDidMount(){
+    this.setState({query: this.props.query})
     this.search && this.search.focus()
   }
 
   setSearchTerm = async term => {
-    try {
-      const results = await this.props.searchBooks(term)
-
-      const books = _.isArray(results) ? results : []
-      const booksInTheShelf = books.map(
-        book => (book.shelf ? book : { ...book, shelf: 'none' })
-      )
-      this.setState({ books: booksInTheShelf })
-    } catch (error) {
-      this.setState({ books: [] })
-    }
+    this.setState({query: term})
+    this.props.searchBooks(term)
   }
 
   moveBook = async (book, shelf) => {
     //mutate a single property and preserve current info
     try {
-      const bookToUpdate = _.head(
-        this.state.books.filter(b => b.id === book.id)
-      )
+      const bookToUpdate = _.head(this.props.books.filter(b => b.id === book.id))
       await this.props.updateBook({ ...bookToUpdate, shelf })
-      this.setState(prevState => {
-        return { books: prevState.books.filter(b => b.id !== bookToUpdate.id) }
-      })
-    } catch (error) {}
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   render() {
-    const books = this.state.books
+    const books = this.props.books
     const hasBooks = books && books.length > 0
     return (
       <div className="search-books">
@@ -64,6 +57,7 @@ export default class SearchBooks extends Component {
           <div className="search-books-input-wrapper">
             <DebounceInput
               placeholder="Search by title or author"
+              value={this.state.query}
               minLength={2}
               debounceTimeout={300}
               onChange={e => {
@@ -72,7 +66,6 @@ export default class SearchBooks extends Component {
               inputRef={ref => {
                 this.search = ref;
               }}
-              // ref={(ref => {this.search = ref})}
             />
           </div>
         </div>
