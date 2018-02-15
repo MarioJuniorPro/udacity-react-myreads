@@ -27,10 +27,28 @@ class App extends Component {
     try {
       const books = await this.props.api.BooksAPI.getAll()
       this.setState({ books, isLoading: false })
-      console.log('books', books)
     } catch (error) {
-      throw new Error(error)
       console.error(error)
+    }
+  }
+
+  updateBook = async book => {
+    try {
+      await this.props.api.BooksAPI.update(book, book.shelf)
+      const filteredBooks = this.state.books.filter(b => b.id !== book.id)
+      this.setState({ books: [...filteredBooks, book] })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  searchBooks = async term => {
+    try {
+      const result = await this.props.api.BooksAPI.search(term)
+      return result
+    } catch (error) {
+      console.error(error)
+      return [];
     }
   }
 
@@ -42,9 +60,27 @@ class App extends Component {
             <Route
               path="/"
               exact
-              render={() =>  this.state.isLoading ? <Loader /> : <ListBooks books={this.state.books} />}
+              render={() =>
+                this.state.isLoading ? (
+                  <Loader />
+                ) : (
+                  <ListBooks
+                    books={this.state.books}
+                    updateBook={this.updateBook}
+                  />
+                )
+              }
             />
-            <Route path={'/search'} exact render={() => <SearchBooks />} />
+            <Route
+              path={'/search'}
+              exact
+              render={() => (
+                <SearchBooks
+                  updateBook={this.updateBook}
+                  searchBooks={this.searchBooks}
+                />
+              )}
+            />
           </Switch>
         </div>
       </Router>

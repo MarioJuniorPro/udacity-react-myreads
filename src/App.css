@@ -162,6 +162,16 @@ body, .app {
   cursor: pointer;
 }
 
+.book-shelf-empty {
+  padding: 40px 20px 20px;
+  font-size: 24px;
+  color: #A7CAF3
+}
+
+.book-shelf-empty > a{
+  color: #1F6CC7;
+}
+
 /* book cover */
 
 .book-cover {

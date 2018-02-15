@@ -1,12 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import exact from 'prop-types-exact'
+import { Link } from 'react-router-dom'
 
-import BooksGrid from './BooksGrid';
+import BookGrid from './BookGrid'
 
 const propTypes = exact({
   title: PropTypes.string.isRequired,
-  books: PropTypes.array.isRequired
+  books: PropTypes.array.isRequired,
+  moveBook: PropTypes.func
 })
 
 const defaultProps = {
@@ -15,11 +17,16 @@ const defaultProps = {
 
 function BookShelf(props) {
   const { title, books } = props
+  const bookCount = books.length
   return (
     <div className="bookshelf">
-      <h2 className="bookshelf-title">{title} </h2>
+      <h2 className="bookshelf-title">{title} ({bookCount})</h2>
       <div className="bookshelf-books">
-        <BooksGrid books={books}/>
+        {
+          bookCount > 0 ? 
+          <BookGrid books={books} moveBook={props.moveBook}></BookGrid>:
+          <p className="book-shelf-empty">No books? You can search <Link to="/search">here</Link> </p>
+        }
       </div>
     </div>
   )
