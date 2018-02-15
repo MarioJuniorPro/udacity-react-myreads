@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import exact from 'prop-types-exact'
+import { Link } from 'react-router-dom'
 
 import BookGrid from './BookGrid'
 
@@ -21,7 +22,11 @@ function BookShelf(props) {
     <div className="bookshelf">
       <h2 className="bookshelf-title">{title} ({bookCount})</h2>
       <div className="bookshelf-books">
-        <BookGrid books={books} moveBook={props.moveBook}></BookGrid>
+        {
+          bookCount > 0 ? 
+          <BookGrid books={books} moveBook={props.moveBook}></BookGrid>:
+          <p className="book-shelf-empty">No books? You can search <Link to="/search">here</Link> </p>
+        }
       </div>
     </div>
   )
