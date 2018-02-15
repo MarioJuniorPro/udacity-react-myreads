@@ -54,6 +54,7 @@ export default class SearchBooks extends Component {
 
   render() {
     const books = this.state.books
+    const hasBooks = books && books.length > 0
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -75,7 +76,7 @@ export default class SearchBooks extends Component {
             />
           </div>
         </div>
-        <div className="search-books-results">
+        <div className={`search-books-results ${!hasBooks ? 'search-books-results-empty':''}`}>
           <BookGrid books={books} moveBook={this.moveBook} />
         </div>
       </div>
