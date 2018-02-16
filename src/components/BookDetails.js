@@ -12,23 +12,46 @@ class BookDetails extends Component {
     super(props)
 
     this.state = {
-      bookId: undefined,
       book: {},
       isLoading: true
     }
   }
 
   static propTypes = {
-    moveBook: PropTypes.func.isRequired
+    api: PropTypes.object.isRequired,
+    toast: PropTypes.object.isRequired
   }
 
   async componentDidMount() {
-    const { match: { params: { bookId } } } = this.props
-    const book = await this.props.api.BooksAPI.get(bookId)
-    this.setState({ bookId, book, isLoading: false })
+    const { match: { params: { bookId } }} = this.props
+    const { history, toast, api } = this.props
+    try {
+      const book = await api.BooksAPI.get(bookId)
+      this.setState({ book, isLoading: false })
+    } catch (error) {
+      toast.error('Oops! Something went wrong.', {
+        position: toast.POSITION.TOP_CENTER
+      })
+      history.push('/')
+    } 
   }
 
-  _descriptionShortner(description = ''){
+  moveBook = async book => {
+    const {toast , api} = this.props
+    try {
+      await api.BooksAPI.update(book, book.shelf)
+      this.setState({ book })
+      toast.info('Book moved :)', {
+        position: toast.POSITION.TOP_CENTER
+      })
+    } catch (error) {
+      toast.error('Oops! Something went wrong.', {
+        position: toast.POSITION.TOP_CENTER
+      })
+    }
+  }
+
+  _descriptionShortner(description = '') {
     return description
       .split(' ')
       .slice(0, 100)
@@ -37,15 +60,12 @@ class BookDetails extends Component {
   }
 
   render() {
-    if(this.state.isLoading){
-      return <Loader />
-    }
-    
     const { book } = this.state
     const coverImage = (book.imageLinks && book.imageLinks.smallThumbnail) || ''
     const shorterDescription = this._descriptionShortner(book.description)
     return (
       <div>
+        <Loader show={this.state.isLoading} />
         <div className="book-detail-title">
           <Link className="back-link" to="/">
             Close
@@ -59,7 +79,7 @@ class BookDetails extends Component {
                 <div className="book-cover">
                   <BookCover image_uri={coverImage} />
                 </div>
-                <BookShelfChanger book={book} onMove={this.props.moveBook} />
+                <BookShelfChanger book={book} onMove={this.moveBook} />
                 <div className="book-shop">
                   <a className="button" href={book.infoLink} title="Buy now!">
                     Buy
@@ -78,7 +98,12 @@ class BookDetails extends Component {
                 <div className="book-identifiers" />
                 <div className="book-description">{shorterDescription}</div>
                 <div className="book-info">
-                  <p>{book.publisher && `Published at: ${book.publishedDate} by ${book.publisher}`}</p>
+                  <p>
+                    {book.publisher &&
+                      `Published at: ${book.publishedDate} by ${
+                        book.publisher
+                      }`}
+                  </p>
                   <p>{`Pages: ${book.pageCount} pages`}</p>
                 </div>
               </div>

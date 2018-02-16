@@ -2,23 +2,18 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import exact from 'prop-types-exact'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import _ from 'lodash'
+import { ToastContainer, toast } from 'react-toastify';
 
 import './App.css'
 import ListBooks from './components/ListBooks'
 import SearchBooks from './components/SearchBooks'
 import BookDetails from './components/BookDetails'
-import Loader from './components/Loader'
 
 class App extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      query: '',
-      books: [],
-      booksSearchResult: [],
-      isLoading: true
     }
   }
 
@@ -28,68 +23,26 @@ class App extends Component {
     }).isRequired
   })
 
-  async componentDidMount() {
-    try {
-      const books = await this.props.api.BooksAPI.getAll()
-      this.setState({ books, isLoading: false })
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  updateBook = async book => {
-    try {
-      await this.props.api.BooksAPI.update(book, book.shelf)
-      const books = await this.props.api.BooksAPI.getAll()
-      const filteredBooks = books.filter(b => b.shelf !== 'none')
-      this.setState({ books: filteredBooks })
-      this.searchBooks(this.state.query)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  searchBooks = async term => {
-    try {
-      const results = await this.props.api.BooksAPI.search(term)
-      const books = _.isArray(results) ? results : []
-      const booksInTheShelf = books.map(
-        book => (book.shelf ? book : { ...book, shelf: 'none' })
-      )
-      this.setState({ booksSearchResult: booksInTheShelf, query: term })
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
   render() {
     return (
       <Router>
         <div className="app">
+          <ToastContainer autoClose={3000} />
           <Switch>
             <Route
               path="/"
               exact
               render={() =>
-                this.state.isLoading ? (
-                  <Loader />
-                ) : (
-                  <ListBooks
-                    books={this.state.books}
-                    updateBook={this.updateBook}
-                  />
-                )
+                <ListBooks
+                  api={this.props.api} toast={toast}
+                />
               }
             />
             <Route
               path={'/search'}
               exact
               render={() => (
-                <SearchBooks
-                  query={this.state.query}
-                  books={this.state.booksSearchResult}
-                  updateBook={this.updateBook}
-                  searchBooks={this.searchBooks}
+                <SearchBooks api={this.props.api} toast={toast}
                 />
               )}
             />
@@ -97,7 +50,7 @@ class App extends Component {
               path={'/book/:bookId'}
               exact
               render={() => (
-                <BookDetails moveBook={this.updateBook} api={this.props.api} />
+                <BookDetails api={this.props.api} toast={toast}/>
               )}
             />
           </Switch>

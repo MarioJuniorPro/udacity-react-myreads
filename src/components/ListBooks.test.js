@@ -28,37 +28,82 @@ describe('<ListBooks />', () => {
     }
   ]
 
+  let mockAPI = null
+  let mockToast = null
+
+  beforeEach(() => {
+    mockAPI = {
+      BooksAPI: {
+        get: jest.fn().mockReturnValue(Promise.resolve(books[0])),
+        getAll: jest.fn().mockReturnValue(Promise.resolve(books)),
+        update: jest.fn(),
+        search: jest.fn().mockReturnValue(Promise.resolve(books))
+      }
+    }
+    mockToast = {
+      info: jest.fn(),
+      error: jest.fn(),
+      POSITION: {
+        TOP_CENTER: 0
+      }
+    }
+  })
+
   it('renders without crashing', () => {
     const wrapper = mount(
       <MemoryRouter initialEntries={['/search']}>
-        <ListBooks books={books} />
+        <ListBooks api={mockAPI} toast={mockToast} />
       </MemoryRouter>
     )
 
     expect(wrapper).toHaveLength(1)
   })
 
-  it('render shelf for each type', () => {
-    const wrapper = shallow(<ListBooks books={books} />)
-    const shelfs = wrapper.state().shelfs
+  it('notifify user if crash on mount', (done) => {
+    expect.assertions(1)
+    const wrapper = mount(
+      <MemoryRouter>
+        <ListBooks api={{}} toast={mockToast}/>
+      </MemoryRouter>
+    )
+    setTimeout(() => {
+      expect(mockToast.error.mock.calls).toHaveLength(1)
+      done()
+    }, 400)
+  }, 10000)
 
+
+  it('render shelf for each type', () => {
+    const wrapper = shallow(<ListBooks api={mockAPI} toast={mockToast} />)
+    const shelfs = wrapper.state().shelfs
     expect(wrapper.find('BookShelf')).toHaveLength(shelfs.length)
   })
 
-  it('Method getBooksByShelf() must filter books by type', () => {
-    const wrapper = shallow(<ListBooks books={books} />)
-    const booksRead = wrapper.instance().getBooksByShelf('read')
+  it('must filter books by type', () => {
+    const wrapper = shallow(<ListBooks  api={mockAPI} toast={mockToast} />)
+    const booksRead = wrapper.instance().getBooksByShelf(books, 'read')
 
     expect(booksRead.length).toBe(2)
   })
 
-  it('Method moveBook() must update a book', () => {
-    const updateBook = jest.fn()
-    const wrapper = shallow(<ListBooks books={books} updateBook={updateBook} />)
-    wrapper.instance().moveBook(books[1], 'wantToRead')
-    const movedBook = updateBook.mock.calls[0][0]
+  it('move a book', (done) => {
+    const wrapper = shallow(<ListBooks  api={mockAPI} toast={mockToast} />)
+    wrapper.instance().moveBook(books[0], 'wantToRead')
+    setTimeout(() => {
+      expect(wrapper.instance().state.books[0]).toMatchObject({ ...books[0], shelf: 'wantToRead' })
+      done()
+    }, 300)
+  }, 1000)
 
-    expect(updateBook.mock.calls.length).toBe(1)
-    expect(movedBook).toMatchObject({ ...books[1], shelf: 'wantToRead' })
-  })
+  it('notify when move book fails', (done) => {
+    expect.assertions(2)
+    const wrapper = shallow(<ListBooks  api={mockAPI} toast={mockToast} />)
+    expect(mockToast.error.mock.calls).toHaveLength(0)
+    wrapper.setProps({api: {}})
+    wrapper.instance().moveBook(books[0], 'wantToRead')
+    setTimeout(() => {
+      expect(mockToast.error.mock.calls).toHaveLength(1)
+      done()
+    }, 300)
+  }, 10000)
 })
