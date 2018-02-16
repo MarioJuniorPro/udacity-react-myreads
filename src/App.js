@@ -97,7 +97,7 @@ class App extends Component {
               path={'/book/:bookId'}
               exact
               render={() => (
-                <BookDetails moveBook={this.updateBook} />
+                <BookDetails moveBook={this.updateBook} api={this.props.api} />
               )}
             />
           </Switch>

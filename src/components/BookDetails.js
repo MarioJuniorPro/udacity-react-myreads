@@ -2,11 +2,10 @@ import React, { Component } from 'react'
 import { Link, withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
-import api from '../api'
-
 import BookCover from './BookCover'
 import BookAuthors from './BookAuthors'
 import BookShelfChanger from './BookShelfChanger'
+import Loader from './Loader'
 
 class BookDetails extends Component {
   constructor(props) {
@@ -14,7 +13,8 @@ class BookDetails extends Component {
 
     this.state = {
       bookId: undefined,
-      book: {}
+      book: {},
+      isLoading: true
     }
   }
 
@@ -24,8 +24,8 @@ class BookDetails extends Component {
 
   async componentDidMount() {
     const { match: { params: { bookId } } } = this.props
-    const book = await api.BooksAPI.get(bookId)
-    this.setState({ bookId, book })
+    const book = await this.props.api.BooksAPI.get(bookId)
+    this.setState({ bookId, book, isLoading: false })
   }
 
   _descriptionShortner(description = ''){
@@ -37,6 +37,10 @@ class BookDetails extends Component {
   }
 
   render() {
+    if(this.state.isLoading){
+      return <Loader />
+    }
+    
     const { book } = this.state
     const coverImage = (book.imageLinks && book.imageLinks.smallThumbnail) || ''
     const shorterDescription = this._descriptionShortner(book.description)
