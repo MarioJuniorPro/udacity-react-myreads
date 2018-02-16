@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
+import URLSearchParams from 'url-search-params'
 
 import { DebounceInput } from 'react-debounce-input'
 import BookGrid from './BookGrid'
 
-export default class SearchBooks extends Component {
+class SearchBooks extends Component {
   constructor(props) {
     super(props)
 
@@ -15,24 +16,36 @@ export default class SearchBooks extends Component {
     }
   }
   
-  static contextTypes = {
-    router: PropTypes.object
-  }
+  // static contextTypes = {
+  //   router: PropTypes.object
+  // }
 
   static propTypes = {
     updateBook: PropTypes.func,
-    searchBooks: PropTypes.func,
+    searchBooks: PropTypes.func.isRequired,
     query: PropTypes.string
   }
 
   componentDidMount(){
-    this.setState({query: this.props.query})
+    const { query, history } = this.props
     this.search && this.search.focus()
+    const queryParam = new URLSearchParams(history.location.search)
+    queryParam.get('q')
+    this.setSearchTerm(queryParam.get('q') || query)
   }
 
   setSearchTerm = async term => {
     this.setState({query: term})
+    this.updateQueryParam(term)
     this.props.searchBooks(term)
+  }
+
+  updateQueryParam(term){
+    const { history } = this.props
+    const queryParam = new URLSearchParams(history.location.search)
+    queryParam.set('q', term)
+    history.replace({...history.location, search: queryParam.toString()})
+
   }
 
   moveBook = async (book, shelf) => {
@@ -41,7 +54,7 @@ export default class SearchBooks extends Component {
       const bookToUpdate = _.head(this.props.books.filter(b => b.id === book.id))
       await this.props.updateBook({ ...bookToUpdate, shelf })
     } catch (error) {
-      console.error(error)
+      //TODO: Notify user of failed action
     }
   }
 
@@ -76,3 +89,5 @@ export default class SearchBooks extends Component {
     )
   }
 }
+
+export default withRouter(SearchBooks)
