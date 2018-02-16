@@ -7,6 +7,7 @@ import _ from 'lodash'
 import './App.css'
 import ListBooks from './components/ListBooks'
 import SearchBooks from './components/SearchBooks'
+import BookDetails from './components/BookDetails'
 import Loader from './components/Loader'
 
 class App extends Component {
@@ -90,6 +91,13 @@ class App extends Component {
                   updateBook={this.updateBook}
                   searchBooks={this.searchBooks}
                 />
+              )}
+            />
+            <Route
+              path={'/book/:bookId'}
+              exact
+              render={() => (
+                <BookDetails moveBook={this.updateBook} />
               )}
             />
           </Switch>

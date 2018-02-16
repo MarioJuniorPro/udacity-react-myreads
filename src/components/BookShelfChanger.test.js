@@ -24,13 +24,6 @@ describe('<BookShelfChanger />', () => {
     expect(wrapper.state().shelf).toBe(book.shelf)
   })
 
-  it('update shelf state on new props', () => {
-    const wrapper = mount(<BookShelfChanger book={book} onMove={mockBookMove} />)
-    expect(wrapper.state().shelf).toBe(book.shelf)
-    wrapper.setProps({book: {...book, shelf: 'wantToRead'}})
-    expect(wrapper.state().shelf).toBe('wantToRead')
-  })
-
   it('render a select', () => {
     const wrapper = mount(<BookShelfChanger book={book} onMove={mockBookMove} />)
     expect(wrapper).toHaveLength(1)
@@ -46,15 +39,19 @@ describe('<BookShelfChanger />', () => {
     ])).toBeTruthy()
   })
 
-  it('call onMove on select change', () => {
+  it('call onMove on select change', async (done) => {
+    jest.useFakeTimers()
     const wrapper = mount(<BookShelfChanger book={book} onMove={mockBookMove} />)
     wrapper.find('select').simulate('change', {target :{ value : 'wantToRead'}});
-    expect(mockBookMove.mock.calls).toHaveLength(1)
-    expect(mockBookMove.mock.calls[0][0]).toMatchObject(book)
-    expect(mockBookMove.mock.calls[0][1]).toBe('wantToRead')
-  })
-
-
-  
+    
+    // console.log(wrapper.debug())
+    setTimeout(() => {
+      expect(mockBookMove.mock.calls).toHaveLength(1)
+      expect(mockBookMove.mock.calls[0][0]).toMatchObject({...book, shelf: 'wantToRead'})
+      expect(mockBookMove.mock.calls[0][1]).toBe('wantToRead')
+      done()
+    }, 500)
+    jest.runOnlyPendingTimers()
+  }, 4000)
 
 });

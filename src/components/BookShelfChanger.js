@@ -28,7 +28,8 @@ export default class BookShelfChanger extends Component {
   handleChange = (e) => {
     e.preventDefault()
     const shelf = e.target.value
-    this.props.onMove(this.props.book, shelf)
+    const book = {...this.props.book, shelf}
+    this.props.onMove(book, shelf)
   }
 
   render() {
