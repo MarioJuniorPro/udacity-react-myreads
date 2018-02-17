@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import exact from 'prop-types-exact'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify'
 
 import './App.css'
 import ListBooks from './components/ListBooks'
@@ -14,6 +14,7 @@ class App extends Component {
     super(props)
 
     this.state = {
+      books: []
     }
   }
 
@@ -22,6 +23,24 @@ class App extends Component {
       BooksAPI: PropTypes.object.isRequired
     }).isRequired
   })
+
+  async componentDidMount() {
+    const books = await this.props.api.BooksAPI.getAll()
+    this.setState({ books })
+  }
+
+  findBookShelf = bookId => {
+    const [book] = this.state.books.filter(b => b.id === bookId)
+    return book && book.shelf ? book.shelf : 'none'
+  }
+
+  syncBookShelf = (book, shelf) => {
+    const newBookRef = {...book, shelf}
+    this.setState(prevState => {
+      const updatedBookList = [...prevState.books.filter(b => b.id !== book.id), newBookRef]
+      return { books: updatedBookList }
+    })
+  }
 
   render() {
     return (
@@ -32,17 +51,24 @@ class App extends Component {
             <Route
               path="/"
               exact
-              render={() =>
+              render={() => (
                 <ListBooks
-                  api={this.props.api} toast={toast}
+                  api={this.props.api}
+                  toast={toast}
+                  books={this.state.books}
+                  syncBookShelf={this.syncBookShelf}
                 />
-              }
+              )}
             />
             <Route
               path={'/search'}
               exact
               render={() => (
-                <SearchBooks api={this.props.api} toast={toast}
+                <SearchBooks
+                  api={this.props.api}
+                  toast={toast}
+                  findBookShelf={this.findBookShelf}
+                  syncBookShelf={this.syncBookShelf}
                 />
               )}
             />
@@ -50,7 +76,11 @@ class App extends Component {
               path={'/book/:bookId'}
               exact
               render={() => (
-                <BookDetails api={this.props.api} toast={toast}/>
+                <BookDetails
+                  api={this.props.api}
+                  toast={toast}
+                  syncBookShelf={this.syncBookShelf}
+                />
               )}
             />
           </Switch>

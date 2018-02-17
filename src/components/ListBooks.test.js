@@ -59,20 +59,6 @@ describe('<ListBooks />', () => {
     expect(wrapper).toHaveLength(1)
   })
 
-  it('notifify user if crash on mount', (done) => {
-    expect.assertions(1)
-    const wrapper = mount(
-      <MemoryRouter>
-        <ListBooks api={{}} toast={mockToast}/>
-      </MemoryRouter>
-    )
-    setTimeout(() => {
-      expect(mockToast.error.mock.calls).toHaveLength(1)
-      done()
-    }, 400)
-  }, 10000)
-
-
   it('render shelf for each type', () => {
     const wrapper = shallow(<ListBooks api={mockAPI} toast={mockToast} />)
     const shelfs = wrapper.state().shelfs
@@ -87,7 +73,7 @@ describe('<ListBooks />', () => {
   })
 
   it('move a book', (done) => {
-    const wrapper = shallow(<ListBooks  api={mockAPI} toast={mockToast} />)
+    const wrapper = shallow(<ListBooks  api={mockAPI} toast={mockToast} books={books}/>)
     wrapper.instance().moveBook(books[0], 'wantToRead')
     setTimeout(() => {
       expect(wrapper.instance().state.books[0]).toMatchObject({ ...books[0], shelf: 'wantToRead' })

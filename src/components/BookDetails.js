@@ -19,7 +19,12 @@ class BookDetails extends Component {
 
   static propTypes = {
     api: PropTypes.object.isRequired,
-    toast: PropTypes.func.isRequired
+    toast: PropTypes.oneOfType([PropTypes.object, PropTypes.func]).isRequired,
+    syncBookShelf: PropTypes.func
+  }
+
+  static defaultProps = {
+    syncBookShelf: () => {}
   }
 
   async componentDidMount() {
@@ -37,10 +42,11 @@ class BookDetails extends Component {
   }
 
   moveBook = async book => {
-    const {toast , api} = this.props
+    const {toast , api, syncBookShelf} = this.props
     try {
       await api.BooksAPI.update(book, book.shelf)
       this.setState({ book })
+      syncBookShelf(book, book.shelf)
       toast.info('Book moved :)', {
         position: toast.POSITION.TOP_CENTER
       })

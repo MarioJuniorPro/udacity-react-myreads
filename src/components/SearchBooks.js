@@ -21,7 +21,14 @@ class SearchBooks extends Component {
 
   static propTypes = {
     api: PropTypes.object.isRequired,
-    toast: PropTypes.func.isRequired
+    toast: PropTypes.oneOfType([PropTypes.object, PropTypes.func]).isRequired,
+    findBookShelf: PropTypes.func,
+    syncBookShelf: PropTypes.func
+  }
+
+  static defaultProps = {
+    findBookShelf: () => 'none',
+    syncBookShelf: () => {}
   }
 
   componentDidMount() {
@@ -37,12 +44,18 @@ class SearchBooks extends Component {
   }
 
   searchBooks = async term => {
-    const {toast , api} = this.props
+    if(!term){
+      this.setState({ books: [] })
+      return
+    }
+
+    const {toast , api, findBookShelf} = this.props
     this.setState({ isLoading: true })
     try {
       const results = await api.BooksAPI.search(term)
       const books = _.isArray(results) ? results : []
-      this.setState({ books })
+      const booksWithShelf = books.map(b => ({...b, shelf: findBookShelf(b.id)}))
+      this.setState({ books: booksWithShelf })
     } catch (error) {
       toast.error('Oops! Something went wrong.', {
         position: toast.POSITION.TOP_CENTER
@@ -61,12 +74,13 @@ class SearchBooks extends Component {
   }
 
   moveBook = async (book, shelf) => {
-    const {toast , api} = this.props
+    const {toast , api, syncBookShelf} = this.props
     try {
       await api.BooksAPI.update(book, shelf)
       const books = this.state.books.map(
         b => (b.id === book.id ? { ...b, shelf } : b)
       )
+      syncBookShelf(book, shelf)
       this.setState({ books })
       toast.info('Book moved :)', {
         position: toast.POSITION.TOP_CENTER
@@ -100,7 +114,7 @@ class SearchBooks extends Component {
                 placeholder="Search by title or author"
                 value={this.state.query}
                 minLength={2}
-                debounceTimeout={300}
+                debounceTimeout={400}
                 onChange={e => {
                   this.setSearchTerm(e.target.value)
                 }}

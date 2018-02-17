@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
 import BookShelf from './BookShelf'
-import Loader from './Loader'
 
 export default class ListBooks extends Component {
   constructor(props) {
@@ -21,22 +20,22 @@ export default class ListBooks extends Component {
 
   static propTypes ={
     api: PropTypes.object.isRequired,
-    toast: PropTypes.func.isRequired
+    toast: PropTypes.oneOfType([PropTypes.object, PropTypes.func]).isRequired,
+    books: PropTypes.array,
+    syncBookShelf: PropTypes.func
   }
 
-  async componentDidMount() {
-    const {toast , api} = this.props
-    try {
-      const books = await api.BooksAPI.getAll()
-      this.setState({ books })
-    } catch (error) {
-      toast.error('Oops! Something went wrong.', {
-        position: toast.POSITION.TOP_CENTER
-      })
-      this.setState({ books: [] })
-    } finally {
-      this.setState({ isLoading: false })
-    }
+  static defaultProps = {
+    books: [],
+    syncBookShelf: () => {}
+  }
+
+  componentDidMount() {
+    this.setState({books: this.props.books})
+  }
+
+  componentWillReceiveProps(newProps){
+    this.setState({books: newProps.books})
   }
 
   getBooksByShelf(books, shelf) {
@@ -44,9 +43,10 @@ export default class ListBooks extends Component {
   }
 
   moveBook = async (book, shelf) => {
-    const {toast , api} = this.props
+    const {toast , api, syncBookShelf} = this.props
     try {
       await api.BooksAPI.update(book, shelf)
+      syncBookShelf(book, book.shelf)
       const books = this.state.books.map(b => b.id === book.id ? { ...b, shelf } : b )
       this.setState({ books })
       toast.info('Book moved :)', {
@@ -62,7 +62,6 @@ export default class ListBooks extends Component {
   render() {
     return (
       <Fragment>
-        <Loader show={this.state.isLoading} />
         <div className="list-books">
           <div className="list-books-title">
             <h1>MyReads</h1>

@@ -95,6 +95,7 @@ describe('<SearchBooks />', () => {
 
     expect(mockAPI.BooksAPI.search.mock.calls).toHaveLength(0)
     searchBooksWrapper.instance().setSearchTerm('')
+    searchBooksWrapper.instance().setSearchTerm('React')
     expect(mockAPI.BooksAPI.search.mock.calls).toHaveLength(1)
   })
 
@@ -133,7 +134,6 @@ describe('<SearchBooks />', () => {
   }, 10000)
 
   it('notify when search book fails', (done) => {
-    mockAPI.BooksAPI.update = undefined
     expect.assertions(3)
     const wrapper = mount(
       <MemoryRouter>
@@ -144,7 +144,7 @@ describe('<SearchBooks />', () => {
     const searchBooksWrapper = wrapper.find('SearchBooks')
     expect(mockToast.error.mock.calls).toHaveLength(0)
     expect(mockAPI.BooksAPI.search.mock.calls).toHaveLength(0)
-    searchBooksWrapper.instance().setSearchTerm('')
+    searchBooksWrapper.instance().setSearchTerm('React')
     setTimeout(() => {
       expect(mockToast.error.mock.calls).toHaveLength(1)
       done()
