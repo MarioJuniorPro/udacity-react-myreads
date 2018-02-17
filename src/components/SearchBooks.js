@@ -21,7 +21,7 @@ class SearchBooks extends Component {
 
   static propTypes = {
     api: PropTypes.object.isRequired,
-    toast: PropTypes.object.isRequired
+    toast: PropTypes.func.isRequired
   }
 
   componentDidMount() {
