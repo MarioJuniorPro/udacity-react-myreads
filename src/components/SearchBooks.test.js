@@ -142,9 +142,6 @@ describe('<SearchBooks />', () => {
     )
   
     const searchBooksWrapper = wrapper.find('SearchBooks')
-    // const booksBeforeSearch = wrapper.find('BookGrid').find('Book')
-    // expect(booksBeforeSearch).toHaveLength(0)
-  
     expect(mockToast.error.mock.calls).toHaveLength(0)
     expect(mockAPI.BooksAPI.search.mock.calls).toHaveLength(0)
     searchBooksWrapper.instance().setSearchTerm('')

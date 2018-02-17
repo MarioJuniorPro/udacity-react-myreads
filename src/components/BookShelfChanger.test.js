@@ -44,7 +44,6 @@ describe('<BookShelfChanger />', () => {
     const wrapper = mount(<BookShelfChanger book={book} onMove={mockBookMove} />)
     wrapper.find('select').simulate('change', {target :{ value : 'wantToRead'}});
     
-    // console.log(wrapper.debug())
     setTimeout(() => {
       expect(mockBookMove.mock.calls).toHaveLength(1)
       expect(mockBookMove.mock.calls[0][0]).toMatchObject({...book, shelf: 'wantToRead'})
